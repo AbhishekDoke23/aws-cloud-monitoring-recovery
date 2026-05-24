@@ -1,0 +1,16 @@
+# Environment and secrets
+.env
+*.env
+*.pem
+*.key
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+
+# Logs (local copies — uploaded to S3 in production)
+*.log
