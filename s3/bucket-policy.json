@@ -1,0 +1,67 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowEC2RoleReadWrite",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::ACCOUNT_ID:role/EC2MonitoringRole"
+      },
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::your-monitoring-log-bucket/logs/*",
+        "arn:aws:s3:::your-monitoring-log-bucket/config/*"
+      ]
+    },
+    {
+      "Sid": "AllowEC2RoleListBucket",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::ACCOUNT_ID:role/EC2MonitoringRole"
+      },
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::your-monitoring-log-bucket",
+      "Condition": {
+        "StringLike": {
+          "s3:prefix": [
+            "logs/*",
+            "config/*"
+          ]
+        }
+      }
+    },
+    {
+      "Sid": "DenyPublicAccess",
+      "Effect": "Deny",
+      "Principal": "*",
+      "Action": "s3:*",
+      "Resource": [
+        "arn:aws:s3:::your-monitoring-log-bucket",
+        "arn:aws:s3:::your-monitoring-log-bucket/*"
+      ],
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "false"
+        }
+      }
+    },
+    {
+      "Sid": "DenyNonSSLRequests",
+      "Effect": "Deny",
+      "Principal": "*",
+      "Action": "s3:*",
+      "Resource": [
+        "arn:aws:s3:::your-monitoring-log-bucket",
+        "arn:aws:s3:::your-monitoring-log-bucket/*"
+      ],
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "false"
+        }
+      }
+    }
+  ]
+}

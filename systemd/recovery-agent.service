@@ -1,0 +1,62 @@
+# =============================================================================
+# recovery-agent.service — systemd Unit File for the Auto-Recovery Agent
+#
+# Purpose:
+#   Manages the recovery.sh script as a long-running systemd service so that
+#   it starts automatically on boot and restarts if it exits unexpectedly.
+#
+# Installation:
+#   sudo cp recovery-agent.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable recovery-agent
+#   sudo systemctl start recovery-agent
+#
+# Useful commands:
+#   sudo systemctl status recovery-agent    # Check current status
+#   sudo journalctl -u recovery-agent -f    # Follow live logs
+#   sudo systemctl restart recovery-agent   # Restart the agent
+# =============================================================================
+
+[Unit]
+Description=EC2 Auto-Recovery Agent
+Documentation=https://github.com/your-username/aws-cloud-monitoring-recovery
+# Start after the network is up so AWS CLI calls succeed
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+# Run as root so systemctl restart commands have the required permissions
+User=root
+Group=root
+
+# Full path to the recovery script
+ExecStart=/opt/recovery-agent/recovery.sh
+
+# Restart the service automatically if it exits for any reason
+Restart=always
+
+# Wait 10 seconds before restarting to avoid rapid restart loops
+RestartSec=10s
+
+# Pass environment variables to the script
+# Replace these values with your actual resource identifiers
+Environment="S3_BUCKET=your-monitoring-log-bucket"
+Environment="SNS_TOPIC_ARN=arn:aws:sns:us-east-1:123456789012:MonitoringAlerts"
+Environment="AWS_REGION=us-east-1"
+
+# Redirect stdout and stderr to the systemd journal
+StandardOutput=journal
+StandardError=journal
+
+# Tag journal entries with the service name for easy filtering
+SyslogIdentifier=recovery-agent
+
+# Give the service 30 seconds to start before systemd considers it failed
+TimeoutStartSec=30
+
+# Give the service 30 seconds to stop gracefully before SIGKILL
+TimeoutStopSec=30
+
+[Install]
+# Enable the service for multi-user (normal boot) targets
+WantedBy=multi-user.target

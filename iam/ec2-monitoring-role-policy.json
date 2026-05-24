@@ -1,0 +1,94 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowCloudWatchMetrics",
+      "Effect": "Allow",
+      "Action": [
+        "cloudwatch:PutMetricData",
+        "cloudwatch:GetMetricStatistics",
+        "cloudwatch:ListMetrics",
+        "cloudwatch:DescribeAlarms"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "cloudwatch:namespace": "CWAgent"
+        }
+      }
+    },
+    {
+      "Sid": "AllowCloudWatchLogs",
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+        "logs:DescribeLogStreams",
+        "logs:DescribeLogGroups"
+      ],
+      "Resource": [
+        "arn:aws:logs:*:*:log-group:/ec2/recovery-agent:*",
+        "arn:aws:logs:*:*:log-group:/ec2/system:*"
+      ]
+    },
+    {
+      "Sid": "AllowEC2DescribeForCloudWatchAgent",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:DescribeVolumes",
+        "ec2:DescribeTags",
+        "ec2:DescribeInstances"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "AllowSNSPublishToMonitoringTopic",
+      "Effect": "Allow",
+      "Action": [
+        "sns:Publish"
+      ],
+      "Resource": "arn:aws:sns:*:*:MonitoringAlerts"
+    },
+    {
+      "Sid": "AllowS3LogBucketReadWrite",
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::your-monitoring-log-bucket",
+        "arn:aws:s3:::your-monitoring-log-bucket/logs/*",
+        "arn:aws:s3:::your-monitoring-log-bucket/config/*"
+      ]
+    },
+    {
+      "Sid": "DenyS3AccessToOtherBuckets",
+      "Effect": "Deny",
+      "Action": "s3:*",
+      "NotResource": [
+        "arn:aws:s3:::your-monitoring-log-bucket",
+        "arn:aws:s3:::your-monitoring-log-bucket/*"
+      ]
+    },
+    {
+      "Sid": "DenyIAMModifications",
+      "Effect": "Deny",
+      "Action": [
+        "iam:CreateRole",
+        "iam:DeleteRole",
+        "iam:AttachRolePolicy",
+        "iam:DetachRolePolicy",
+        "iam:PutRolePolicy",
+        "iam:DeleteRolePolicy",
+        "iam:CreateUser",
+        "iam:DeleteUser",
+        "iam:CreateAccessKey",
+        "iam:DeleteAccessKey"
+      ],
+      "Resource": "*"
+    }
+  ]
+}

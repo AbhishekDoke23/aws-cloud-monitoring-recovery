@@ -1,0 +1,150 @@
+{
+  "comment": "CloudWatch Agent configuration for EC2 instance monitoring.",
+  "comment_metrics": "Collects CPU, memory, disk, and network metrics at 60-second intervals.",
+  "comment_namespace": "All metrics are published under the CWAgent namespace.",
+
+  "agent": {
+    "metrics_collection_interval": 60,
+    "run_as_user": "cwagent",
+    "logfile": "/opt/aws/amazon-cloudwatch-agent/logs/amazon-cloudwatch-agent.log"
+  },
+
+  "metrics": {
+    "namespace": "CWAgent",
+
+    "metrics_collected": {
+
+      "cpu": {
+        "comment": "Collect per-CPU and aggregate CPU utilization metrics.",
+        "resources": ["*"],
+        "measurement": [
+          "cpu_usage_idle",
+          "cpu_usage_user",
+          "cpu_usage_system",
+          "cpu_usage_iowait"
+        ],
+        "metrics_collection_interval": 60,
+        "totalcpu": true
+      },
+
+      "mem": {
+        "comment": "Collect memory utilization — CloudWatch does not provide this natively.",
+        "measurement": [
+          "mem_used_percent",
+          "mem_available_percent",
+          "mem_used",
+          "mem_total"
+        ],
+        "metrics_collection_interval": 60
+      },
+
+      "disk": {
+        "comment": "Collect disk utilization for all mounted volumes.",
+        "resources": ["*"],
+        "measurement": [
+          "disk_used_percent",
+          "disk_free",
+          "disk_used",
+          "disk_total"
+        ],
+        "metrics_collection_interval": 60,
+        "ignore_file_system_types": ["sysfs", "devtmpfs", "tmpfs"]
+      },
+
+      "diskio": {
+        "comment": "Collect disk I/O throughput and operation counts.",
+        "resources": ["*"],
+        "measurement": [
+          "diskio_reads",
+          "diskio_writes",
+          "diskio_read_bytes",
+          "diskio_write_bytes",
+          "diskio_read_time",
+          "diskio_write_time"
+        ],
+        "metrics_collection_interval": 60
+      },
+
+      "net": {
+        "comment": "Collect network I/O bytes and packet counts per interface.",
+        "resources": ["*"],
+        "measurement": [
+          "net_bytes_recv",
+          "net_bytes_sent",
+          "net_packets_recv",
+          "net_packets_sent",
+          "net_err_in",
+          "net_err_out"
+        ],
+        "metrics_collection_interval": 60
+      },
+
+      "netstat": {
+        "comment": "Collect TCP connection state counts for connection health monitoring.",
+        "measurement": [
+          "tcp_established",
+          "tcp_time_wait",
+          "tcp_close_wait"
+        ],
+        "metrics_collection_interval": 60
+      },
+
+      "processes": {
+        "comment": "Collect process state counts to detect zombie or blocked processes.",
+        "measurement": [
+          "processes_running",
+          "processes_sleeping",
+          "processes_stopped",
+          "processes_zombies",
+          "processes_total"
+        ],
+        "metrics_collection_interval": 60
+      }
+    },
+
+    "append_dimensions": {
+      "comment": "Attach EC2 instance metadata to every metric for filtering in CloudWatch.",
+      "AutoScalingGroupName": "${aws:AutoScalingGroupName}",
+      "ImageId": "${aws:ImageId}",
+      "InstanceId": "${aws:InstanceId}",
+      "InstanceType": "${aws:InstanceType}"
+    },
+
+    "aggregation_dimensions": [
+      ["AutoScalingGroupName"],
+      ["InstanceId", "InstanceType"],
+      []
+    ]
+  },
+
+  "logs": {
+    "comment": "Ship the recovery agent log and system messages to CloudWatch Logs.",
+    "logs_collected": {
+      "files": {
+        "collect_list": [
+          {
+            "file_path": "/var/log/recovery-agent/recovery-*.log",
+            "log_group_name": "/ec2/recovery-agent",
+            "log_stream_name": "{instance_id}/recovery",
+            "timezone": "UTC",
+            "timestamp_format": "%Y-%m-%dT%H:%M:%SZ"
+          },
+          {
+            "file_path": "/var/log/messages",
+            "log_group_name": "/ec2/system",
+            "log_stream_name": "{instance_id}/messages",
+            "timezone": "UTC"
+          },
+          {
+            "file_path": "/var/log/secure",
+            "log_group_name": "/ec2/system",
+            "log_stream_name": "{instance_id}/secure",
+            "timezone": "UTC"
+          }
+        ]
+      }
+    },
+    "log_stream_name": "{instance_id}/default",
+    "force_flush_interval": 15
+  }
+}

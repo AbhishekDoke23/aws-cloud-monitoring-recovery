@@ -1,0 +1,317 @@
+{
+  "widgets": [
+    {
+      "type": "text",
+      "x": 0,
+      "y": 0,
+      "width": 24,
+      "height": 1,
+      "properties": {
+        "markdown": "# EC2 Monitoring Dashboard — Automated Cloud Monitoring & Recovery System\nReal-time view of CPU, memory, disk, and network metrics. Alarm states shown below."
+      }
+    },
+    {
+      "type": "alarm",
+      "x": 0,
+      "y": 1,
+      "width": 24,
+      "height": 2,
+      "properties": {
+        "title": "Alarm Status Overview",
+        "alarms": [
+          "arn:aws:cloudwatch:REGION:ACCOUNT_ID:alarm:HighCPUUtilization-INSTANCE_ID",
+          "arn:aws:cloudwatch:REGION:ACCOUNT_ID:alarm:HighMemoryUtilization-INSTANCE_ID",
+          "arn:aws:cloudwatch:REGION:ACCOUNT_ID:alarm:HighDiskUtilization-INSTANCE_ID",
+          "arn:aws:cloudwatch:REGION:ACCOUNT_ID:alarm:EC2StatusCheckFailed-INSTANCE_ID",
+          "arn:aws:cloudwatch:REGION:ACCOUNT_ID:alarm:CloudWatchAgentHeartbeatMissing-INSTANCE_ID"
+        ]
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 3,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "title": "CPU Utilization (%)",
+        "view": "timeSeries",
+        "stacked": false,
+        "metrics": [
+          [
+            "AWS/EC2",
+            "CPUUtilization",
+            "InstanceId",
+            "INSTANCE_ID",
+            {
+              "label": "CPU Utilization",
+              "color": "#ff7f0e",
+              "stat": "Average",
+              "period": 60
+            }
+          ]
+        ],
+        "yAxis": {
+          "left": {
+            "min": 0,
+            "max": 100,
+            "label": "Percent"
+          }
+        },
+        "annotations": {
+          "horizontal": [
+            {
+              "label": "Alarm threshold (90%)",
+              "value": 90,
+              "color": "#d62728"
+            }
+          ]
+        },
+        "period": 60,
+        "stat": "Average",
+        "region": "REGION",
+        "start": "-PT3H",
+        "end": "P0D"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 3,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "title": "Memory Utilization (%)",
+        "view": "timeSeries",
+        "stacked": false,
+        "metrics": [
+          [
+            "CWAgent",
+            "mem_used_percent",
+            "InstanceId",
+            "INSTANCE_ID",
+            {
+              "label": "Memory Used %",
+              "color": "#1f77b4",
+              "stat": "Average",
+              "period": 60
+            }
+          ]
+        ],
+        "yAxis": {
+          "left": {
+            "min": 0,
+            "max": 100,
+            "label": "Percent"
+          }
+        },
+        "annotations": {
+          "horizontal": [
+            {
+              "label": "Alarm threshold (80%)",
+              "value": 80,
+              "color": "#d62728"
+            }
+          ]
+        },
+        "period": 60,
+        "stat": "Average",
+        "region": "REGION",
+        "start": "-PT3H",
+        "end": "P0D"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 9,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "title": "Disk Utilization — Root Volume (%)",
+        "view": "timeSeries",
+        "stacked": false,
+        "metrics": [
+          [
+            "CWAgent",
+            "disk_used_percent",
+            "InstanceId",
+            "INSTANCE_ID",
+            "path",
+            "/",
+            "fstype",
+            "xfs",
+            {
+              "label": "Disk Used %",
+              "color": "#2ca02c",
+              "stat": "Average",
+              "period": 60
+            }
+          ]
+        ],
+        "yAxis": {
+          "left": {
+            "min": 0,
+            "max": 100,
+            "label": "Percent"
+          }
+        },
+        "annotations": {
+          "horizontal": [
+            {
+              "label": "Alarm threshold (85%)",
+              "value": 85,
+              "color": "#d62728"
+            }
+          ]
+        },
+        "period": 60,
+        "stat": "Average",
+        "region": "REGION",
+        "start": "-PT3H",
+        "end": "P0D"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 9,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "title": "Network I/O (bytes/min)",
+        "view": "timeSeries",
+        "stacked": false,
+        "metrics": [
+          [
+            "CWAgent",
+            "net_bytes_recv",
+            "InstanceId",
+            "INSTANCE_ID",
+            {
+              "label": "Bytes Received",
+              "color": "#9467bd",
+              "stat": "Sum",
+              "period": 60
+            }
+          ],
+          [
+            "CWAgent",
+            "net_bytes_sent",
+            "InstanceId",
+            "INSTANCE_ID",
+            {
+              "label": "Bytes Sent",
+              "color": "#8c564b",
+              "stat": "Sum",
+              "period": 60
+            }
+          ]
+        ],
+        "yAxis": {
+          "left": {
+            "label": "Bytes"
+          }
+        },
+        "period": 60,
+        "stat": "Sum",
+        "region": "REGION",
+        "start": "-PT3H",
+        "end": "P0D"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 15,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "title": "EC2 Status Check Results",
+        "view": "timeSeries",
+        "stacked": false,
+        "metrics": [
+          [
+            "AWS/EC2",
+            "StatusCheckFailed_Instance",
+            "InstanceId",
+            "INSTANCE_ID",
+            {
+              "label": "Instance Status Check",
+              "color": "#d62728",
+              "stat": "Maximum",
+              "period": 60
+            }
+          ],
+          [
+            "AWS/EC2",
+            "StatusCheckFailed_System",
+            "InstanceId",
+            "INSTANCE_ID",
+            {
+              "label": "System Status Check",
+              "color": "#ff9896",
+              "stat": "Maximum",
+              "period": 60
+            }
+          ]
+        ],
+        "yAxis": {
+          "left": {
+            "min": 0,
+            "max": 1,
+            "label": "Failed (1=Yes, 0=No)"
+          }
+        },
+        "period": 60,
+        "stat": "Maximum",
+        "region": "REGION",
+        "start": "-PT3H",
+        "end": "P0D"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 15,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "title": "Running Processes Count",
+        "view": "timeSeries",
+        "stacked": false,
+        "metrics": [
+          [
+            "CWAgent",
+            "processes_running",
+            "InstanceId",
+            "INSTANCE_ID",
+            {
+              "label": "Running",
+              "color": "#2ca02c",
+              "stat": "Average",
+              "period": 60
+            }
+          ],
+          [
+            "CWAgent",
+            "processes_zombies",
+            "InstanceId",
+            "INSTANCE_ID",
+            {
+              "label": "Zombies",
+              "color": "#d62728",
+              "stat": "Average",
+              "period": 60
+            }
+          ]
+        ],
+        "period": 60,
+        "stat": "Average",
+        "region": "REGION",
+        "start": "-PT3H",
+        "end": "P0D"
+      }
+    }
+  ]
+}
